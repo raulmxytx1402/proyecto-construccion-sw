@@ -1,39 +1,54 @@
-# Sistema de Gestión de Materiales de Construcción
+import random
+import tkinter as tk
+from tkinter import messagebox
 
-def mostrar_menu():
-    print("\n--- SISTEMA DE GESTIÓN DE MATERIALES ---")
-    print("1. Ver inventario de materiales")
-    print("2. Agregar nuevo material")
-    print("3. Salir")
+class JuegoAdivinanza:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("🎮 Juego de Adivinanza")
+        self.root.geometry("350x250")
+        
+        self.numero_secreto = random.randint(1, 100)
+        self.intentos = 0
+        self.max_intentos = 7
 
-def gestionar_inventario():
-    inventario = [
-        {"nombre": "Cemento (bolsas)", "cantidad": 50},
-        {"nombre": "Varilla de Fierro 1/2", "cantidad": 120},
-        {"nombre": "Ladrillo King Kong", "cantidad": 1000}
-    ]
+        tk.Label(root, text="Adivina el número (1 - 100)", font=("Arial", 14, "bold")).pack(pady=10)
+        
+        self.lbl_info = tk.Label(root, text=f"Tienes {self.max_intentos} intentos restantes.", font=("Arial", 10))
+        self.lbl_info.pack(pady=5)
 
-    while True:
-        mostrar_menu()
-        opcion = input("Selecciona una opción (1-3): ")
+        self.txt_numero = tk.Entry(root, font=("Arial", 12), justify="center")
+        self.txt_numero.pack(pady=10)
 
-        if opcion == "1":
-            print("\n--- INVENTARIO ACTUAL ---")
-            for idx, item in enumerate(inventario, 1):
-                print(f"{idx}. {item['nombre']}: {item['cantidad']} unidades")
-        elif opcion == "2":
-            nombre = input("Nombre del material: ")
-            try:
-                cantidad = int(input("Cantidad disponible: "))
-                inventario.append({"nombre": nombre, "cantidad": cantidad})
-                print(f"¡{nombre} agregado exitosamente!")
-            except ValueError:
-                print("Error: Ingresa un número válido para la cantidad.")
-        elif opcion == "3":
-            print("Saliendo del programa. ¡Hasta luego!")
-            break
-        else:
-            print("Opción no válida. Intenta de nuevo.")
+        self.btn_adivinar = tk.Button(root, text="Adivinar", command=self.comprobar, bg="#4CAF50", fg="white", font=("Arial", 10, "bold"))
+        self.btn_adivinar.pack(pady=10)
+
+    def comprobar(self):
+        try:
+            intento = int(self.txt_numero.get())
+            self.intentos += 1
+            restantes = self.max_intentos - self.intentos
+
+            if intento < self.numero_secreto:
+                messagebox.showinfo("Pista", "➡️ El número secreto es MAYOR")
+            elif intento > self.numero_secreto:
+                messagebox.showinfo("Pista", "⬅️ El número secreto es MENOR")
+            else:
+                messagebox.showinfo("🎉 ¡Ganaste!", f"¡Felicidades! Adivinaste en {self.intentos} intentos.")
+                self.root.destroy()
+                return
+
+            if restantes == 0:
+                messagebox.showerror("💀 Fin del juego", f"Sin intentos restantes. El número era {self.numero_secreto}.")
+                self.root.destroy()
+            else:
+                self.lbl_info.config(text=f"Intentos restantes: {restantes}")
+                self.txt_numero.delete(0, tk.END)
+
+        except ValueError:
+            messagebox.showwarning("Atención", "Ingresa un número entero válido.")
 
 if __name__ == "__main__":
-    gestionar_inventario()
+    root = tk.Tk()
+    app = JuegoAdivinanza(root)
+    root.mainloop()
