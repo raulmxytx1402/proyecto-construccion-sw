@@ -1,1 +1,4 @@
-print("Proyecto de Construcción de Software")
+def saludar():
+    print("Proyecto funcional para Construcción de Software")
+
+saludar()
